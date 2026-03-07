@@ -1,0 +1,71 @@
+﻿@page "/pokemon"
+@using PokeBlaz.Models
+@using PokeBlaz.Services
+@inject PokemonService PokemonService
+@inject FavoriService FavoriService
+@rendermode InteractiveServer
+
+<h1>PokéBuild</h1>
+
+@if (pokemons == null)
+{
+    <p>Chargement...</p>
+}
+else
+{
+    <div class="search-bar">
+        <input type="text" placeholder="Rechercher un pokémon..."
+               @bind="recherche" @bind:event="oninput" />
+    </div>
+
+    <div class="pokemon-grid">
+        @foreach (var pokemon in PokemonsFiltres)
+        {
+            <div class="pokemon-card">
+                <img src="@pokemon.Image" alt="@pokemon.Name" />
+                <h3>@pokemon.Name</h3>
+                <div class="types">
+                    @foreach (var type in pokemon.ApiTypes)
+                    {
+                        <img src="@type.Image" alt="@type.Name" title="@type.Name" class="type-icon" />
+                    }
+                </div>
+                <div class="card-actions">
+                    <a href="/pokemon/@pokemon.Id">Voir détail</a>
+                    @if (FavoriService.IsFavori(pokemon.Id))
+                    {
+                        <button @onclick="() => RetirerFavori(pokemon.Id)">❤️ Favori</button>
+                    }
+                    else
+                    {
+                        <button @onclick="() => AjouterFavori(pokemon)">🤍 Favori</button>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+}
+
+@code {
+    private List<Pokemon>? pokemons;
+    private string recherche = "";
+
+    private IEnumerable<Pokemon> PokemonsFiltres =>
+        pokemons?.Where(p => p.Name.Contains(recherche, StringComparison.OrdinalIgnoreCase))
+        ?? Enumerable.Empty<Pokemon>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        pokemons = await PokemonService.GetAllPokemonsAsync();
+    }
+
+    private void AjouterFavori(Pokemon pokemon)
+    {
+        FavoriService.Ajouter(pokemon);
+    }
+
+    private void RetirerFavori(int id)
+    {
+        FavoriService.Supprimer(id);
+    }
+}

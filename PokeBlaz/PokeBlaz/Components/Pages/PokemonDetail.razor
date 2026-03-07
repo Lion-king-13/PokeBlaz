@@ -1,0 +1,96 @@
+﻿@page "/pokemon/{Id:int}"
+@using PokeBlaz.Models
+@using PokeBlaz.Services
+@inject PokemonService PokemonService
+@inject FavoriService FavoriService
+@inject NavigationManager Navigation
+@rendermode InteractiveServer
+
+<a href="/pokemon">Retour à la liste</a>
+
+@if (pokemon == null)
+{
+    <p>Chargement...</p>
+}
+else
+{
+    <div class="detail-container">
+        <div class="detail-header">
+            <img src="@pokemon.Image" alt="@pokemon.Name" class="detail-image" />
+            <div>
+                <h1>#@pokemon.Id — @pokemon.Name</h1>
+                <div class="types">
+                    @foreach (var type in pokemon.ApiTypes)
+                    {
+                        <img src="@type.Image" alt="@type.Name" title="@type.Name" class="type-icon" />
+                    }
+                </div>
+
+                @if (FavoriService.IsFavori(pokemon.Id))
+                {
+                    <button @onclick="RetirerFavori">Retirer des favoris</button>
+                }
+                else
+                {
+                    <button @onclick="AjouterFavori">Ajouter aux favoris</button>
+                }
+            </div>
+        </div>
+
+        <div class="stats">
+            <h2>Statistiques</h2>
+            <div class="stat-row">
+                <span> HP</span>
+                <div class="stat-bar">
+                    <div style="width: @(pokemon.Base.HP / 2)%" class="bar-fill hp"></div>
+                </div>
+                <span>@pokemon.Base.HP</span>
+            </div>
+            <div class="stat-row">
+                <span>Attaque</span>
+                <div class="stat-bar">
+                    <div style="width: @(pokemon.Base.Attack / 2)%" class="bar-fill attack"></div>
+                </div>
+                <span>@pokemon.Base.Attack</span>
+            </div>
+            <div class="stat-row">
+                <span> Défense</span>
+                <div class="stat-bar">
+                    <div style="width: @(pokemon.Base.Defense / 2)%" class="bar-fill defense"></div>
+                </div>
+                <span>@pokemon.Base.Defense</span>
+            </div>
+            <div class="stat-row">
+                <span> Vitesse</span>
+                <div class="stat-bar">
+                    <div style="width: @(pokemon.Base.Speed / 2)%" class="bar-fill speed"></div>
+                </div>
+                <span>@pokemon.Base.Speed</span>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private Pokemon? pokemon;
+
+    protected override async Task OnInitializedAsync()
+    {
+        pokemon = await PokemonService.GetPokemonByIdAsync(Id);
+    }
+
+    private void AjouterFavori()
+    {
+        if (pokemon != null)
+            FavoriService.Ajouter(pokemon);
+    }
+
+    private void RetirerFavori()
+    {
+        if (pokemon != null)
+            FavoriService.Supprimer(pokemon.Id);
+    }
+}

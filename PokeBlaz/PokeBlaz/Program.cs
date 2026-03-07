@@ -1,10 +1,16 @@
 using PokeBlaz.Components;
+using PokeBlaz.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+builder.Services.AddHttpClient<PokemonService>(client =>
+{
+    client.BaseAddress = new Uri("https://pokebuildapi.fr/api/v1/");
+});
+builder.Services.AddSingleton<FavoriService>();
 
 var app = builder.Build();
 
