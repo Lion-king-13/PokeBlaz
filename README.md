@@ -26,7 +26,6 @@ API gratuite, sans authentification requise, qui fournit des données enrichies 
 
 | Endpoint | Description |
 |----------|-------------|
-| `GET /pokemon/limit/151` | Récupère les 151 premiers Pokémons |
 | `GET /pokemon/{id}` | Récupère un Pokémon par son ID |
 
 ### Exemple de réponse (`/pokemon/1`)
