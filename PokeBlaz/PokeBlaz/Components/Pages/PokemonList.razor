@@ -5,6 +5,9 @@
 @inject FavoriService FavoriService
 @rendermode InteractiveServer
 
+@* Page listant tous les pokémons et permettant de gérer les favoris.
+   Affiche un champ de recherche et une grille de cartes de pokémon. *@
+
 <h1>PokéBuild</h1>
 
 @if (pokemons == null)
@@ -47,23 +50,29 @@ else
 }
 
 @code {
+    // Liste des pokémons récupérée depuis l'API
     private List<Pokemon>? pokemons;
+    // Terme de recherche pour filtrer l'affichage
     private string recherche = "";
 
+    // Collection filtrée selon le terme de recherche (sûre même si pokemons == null)
     private IEnumerable<Pokemon> PokemonsFiltres =>
         pokemons?.Where(p => p.Name.Contains(recherche, StringComparison.OrdinalIgnoreCase))
         ?? Enumerable.Empty<Pokemon>();
 
+    // Chargement initial des pokémons via PokemonService
     protected override async Task OnInitializedAsync()
     {
         pokemons = await PokemonService.GetAllPokemonsAsync();
     }
 
+    // Ajoute un pokémon aux favoris via le service dédié
     private void AjouterFavori(Pokemon pokemon)
     {
         FavoriService.Ajouter(pokemon);
     }
 
+    // Retire un pokémon des favoris
     private void RetirerFavori(int id)
     {
         FavoriService.Supprimer(id);

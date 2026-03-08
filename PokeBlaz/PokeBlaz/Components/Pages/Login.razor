@@ -4,6 +4,11 @@
 @inject NavigationManager Navigation
 @rendermode InteractiveServer
 
+@* Page de connexion simple :
+   - Utilise AuthService pour valider les identifiants
+   - Redirige vers la page des favoris en cas de succès
+*@
+
 <div class="login-container">
     <h1> Connexion</h1>
 
@@ -24,10 +29,14 @@
 </div>
 
 @code {
+    // Champs liés aux inputs du formulaire
     private string nom = "";
     private string motDePasse = "";
+    // Indique si une erreur de connexion doit être affichée
     private bool erreur = false;
 
+    // Tente la connexion en utilisant AuthService. En cas de succès,
+    // redirige l'utilisateur vers /favoris, sinon active le flag d'erreur.
     private void SeConnecter()
     {
         erreur = false;

@@ -4,6 +4,11 @@
 @rendermode InteractiveServer
 @implements IDisposable
 
+@* Menu de navigation présent sur toutes les pages.
+   Affiche des liens différents selon l'état d'authentification
+   (géré par AuthService). S'abonne aux changements d'auth pour
+   forcer le rafraîchissement du composant. *@
+
 <nav class="navbar">
     <a href="/"> Accueil</a>
     <a href="/pokemon"> Pokémons</a>
@@ -24,6 +29,8 @@
 @code {
     protected override void OnInitialized()
     {
+        // S'abonne aux changements d'authentification pour rafraîchir
+        // la navigation (affichage des liens / nom utilisateur)
         AuthService.OnAuthChanged += RefreshNav;
     }
 
@@ -40,6 +47,7 @@
 
     public void Dispose()
     {
+        // Désabonne proprement lors de la destruction du composant
         AuthService.OnAuthChanged -= RefreshNav;
     }
 }

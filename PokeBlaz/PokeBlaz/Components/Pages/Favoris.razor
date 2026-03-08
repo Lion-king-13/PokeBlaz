@@ -5,6 +5,10 @@
 @inject AuthService AuthService
 @rendermode InteractiveServer
 
+@* Page listant les favoris de l'utilisateur connecté.
+   Permet d'éditer une note pour chaque favori et de supprimer un favori.
+*@
+
 @if (!AuthService.EstConnecte)
 {
     <p>Tu dois être <a href="/login">connecté</a> pour voir tes favoris.</p>
@@ -55,8 +59,11 @@ else
 }
 
 @code {
+    // Liste locale des favoris récupérés depuis le service
     private List<Favori> favoris = new();
+    // Identifiant du favori en cours d'édition (null si aucun)
     private int? enEdition = null;
+    // Contenu de la note en cours d'édition
     private string noteEnCours = "";
 
     protected override void OnInitialized()

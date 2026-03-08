@@ -1,10 +1,14 @@
-﻿@page "/pokemon/{Id:int}"
+﻿
+@page "/pokemon/{Id:int}"
 @using PokeBlaz.Models
 @using PokeBlaz.Services
 @inject PokemonService PokemonService
 @inject FavoriService FavoriService
 @inject NavigationManager Navigation
 @rendermode InteractiveServer
+
+@* Page de détail d'un pokémon : affiche les informations complètes
+   (stats, types, image) et permet d'ajouter/retirer le pokémon des favoris. *@
 
 <a href="/pokemon">Retour à la liste</a>
 
@@ -88,20 +92,25 @@ else
 @code {
     [Parameter]
     public int Id { get; set; }
+    // Identifiant du pokémon passé via la route
 
+    // Instance du pokémon chargée depuis le service
     private Pokemon? pokemon;
 
+    // Au démarrage, récupère les détails du pokémon via PokemonService
     protected override async Task OnInitializedAsync()
     {
         pokemon = await PokemonService.GetPokemonByIdAsync(Id);
     }
 
+    // Ajoute le pokémon courant aux favoris (utilise FavoriService)
     private void AjouterFavori()
     {
         if (pokemon != null)
             FavoriService.Ajouter(pokemon);
     }
 
+    // Supprime le pokémon courant des favoris
     private void RetirerFavori()
     {
         if (pokemon != null)

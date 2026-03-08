@@ -6,6 +6,12 @@
 @inject AuthService AuthService
 @rendermode InteractiveServer
 
+@* Page permettant de composer une équipe (build) de jusqu'à 6 pokémons.
+   - Vérifie que l'utilisateur est connecté via AuthService
+   - Permet d'ajouter/retrait des pokémons, générer une équipe aléatoire
+   - Calcule des statistiques moyennes et sauvegarde l'équipe dans FavoriService
+*@
+
 @if (!AuthService.EstConnecte)
 {
     <div style="text-align:center; padding: 3rem;">
@@ -145,9 +151,13 @@ else
 }
 
 @code {
+    // Liste complète chargée depuis l'API
     private List<Pokemon>? tousPokemon;
+    // Équipe courante (max 6)
     private List<Pokemon> equipe = new();
+    // Terme de recherche utilisé pour filtrer la liste
     private string recherche = "";
+    // Indicateur visuel après sauvegarde
     private bool messageSauvegarde = false;
 
     private IEnumerable<Pokemon> PokemonsFiltres =>
@@ -161,6 +171,7 @@ else
 
     private void AjouterAuBuild(Pokemon pokemon)
     {
+        // Ajoute le pokémon si la limite n'est pas atteinte et s'il n'est pas déjà présent
         if (equipe.Count < 6 && !equipe.Any(p => p.Id == pokemon.Id))
             equipe.Add(pokemon);
     }
