@@ -1,4 +1,4 @@
 <Solution>
-  <Project Path="PokeBlaz.test/PokeBlaz.test.csproj" />
+  <Project Path="PokeBlaz.test/PokeBlaz.test.csproj" DisplayName="PokeBlaz.Test" />
   <Project Path="PokeBlaz/PokeBlaz.csproj" />
 </Solution>
