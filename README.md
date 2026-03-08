@@ -1,8 +1,8 @@
 # PokeBlaz 🎮
 
-Application web développée en **Blazor Server (.NET)** dans le cadre du cours de Programmation Orientée Objet (5IOBJ-1).
+Application web développée en **Blazor Server (.NET)** dans le cadre du cours de Programmation Orientée Objet.
 
-Elle permet de consulter des Pokémons via une API externe, de gérer des favoris personnels et de composer une équipe de combat.
+Elle permet de consulter des Pokémons via une API externe, de gérer des favoris personnels et de composer un build.
 
 ---
 
