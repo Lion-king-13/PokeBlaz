@@ -1,0 +1,39 @@
+﻿@page "/login"
+@using PokeBlaz.Services
+@inject AuthService AuthService
+@inject NavigationManager Navigation
+@rendermode InteractiveServer
+
+<div class="login-container">
+    <h1> Connexion</h1>
+
+    @if (erreur)
+    {
+        <p class="erreur">Nom d'utilisateur ou mot de passe incorrect.</p>
+    }
+
+    <div class="login-form">
+        <input type="text" placeholder="Nom d'utilisateur"
+               @bind="nom" />
+        <input type="password" placeholder="Mot de passe"
+               @bind="motDePasse" />
+        <button @onclick="SeConnecter">Se connecter</button>
+    </div>
+
+    <p class="hint">Comptes disponibles : ash / pikachu — misty / togepi</p>
+</div>
+
+@code {
+    private string nom = "";
+    private string motDePasse = "";
+    private bool erreur = false;
+
+    private void SeConnecter()
+    {
+        erreur = false;
+        if (AuthService.Connecter(nom, motDePasse))
+            Navigation.NavigateTo("/favoris");
+        else
+            erreur = true;
+    }
+}

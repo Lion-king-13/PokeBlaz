@@ -49,23 +49,37 @@ else
             <div class="stat-row">
                 <span>Attaque</span>
                 <div class="stat-bar">
-                    <div style="width: @(pokemon.Base.Attack / 2)%" class="bar-fill attack"></div>
+                    <div style="width: @(pokemon.Base.attack / 2)%" class="bar-fill attack"></div>
                 </div>
-                <span>@pokemon.Base.Attack</span>
+                <span>@pokemon.Base.attack</span>
             </div>
             <div class="stat-row">
                 <span> Défense</span>
                 <div class="stat-bar">
-                    <div style="width: @(pokemon.Base.Defense / 2)%" class="bar-fill defense"></div>
+                    <div style="width: @(pokemon.Base.defense / 2)%" class="bar-fill defense"></div>
                 </div>
-                <span>@pokemon.Base.Defense</span>
+                <span>@pokemon.Base.defense</span>
+            </div>
+            <div class="stat-row">
+                <span> Attaque Spéciale</span>
+                <div class="stat-bar">
+                    <div style="width: @(pokemon.Base.special_attack / 2)%" class="bar-fill defense"></div>
+                </div>
+                <span>@pokemon.Base.special_attack</span>
+            </div>
+            <div class="stat-row">
+                <span> Défense Spéciale</span>
+                <div class="stat-bar">
+                    <div style="width: @(pokemon.Base.special_defense / 2)%" class="bar-fill defense"></div>
+                </div>
+                <span>@pokemon.Base.special_defense</span>
             </div>
             <div class="stat-row">
                 <span> Vitesse</span>
                 <div class="stat-bar">
-                    <div style="width: @(pokemon.Base.Speed / 2)%" class="bar-fill speed"></div>
+                    <div style="width: @(pokemon.Base.speed / 2)%" class="bar-fill speed"></div>
                 </div>
-                <span>@pokemon.Base.Speed</span>
+                <span>@pokemon.Base.speed</span>
             </div>
         </div>
     </div>

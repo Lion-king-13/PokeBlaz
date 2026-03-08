@@ -34,11 +34,11 @@ else
                     <a href="/pokemon/@pokemon.Id">Voir détail</a>
                     @if (FavoriService.IsFavori(pokemon.Id))
                     {
-                        <button @onclick="() => RetirerFavori(pokemon.Id)">❤️ Favori</button>
+                        <button @onclick="() => RetirerFavori(pokemon.Id)"> Favori</button>
                     }
                     else
                     {
-                        <button @onclick="() => AjouterFavori(pokemon)">🤍 Favori</button>
+                        <button @onclick="() => AjouterFavori(pokemon)"> Favori</button>
                     }
                 </div>
             </div>

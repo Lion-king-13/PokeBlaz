@@ -11,6 +11,7 @@ builder.Services.AddHttpClient<PokemonService>(client =>
     client.BaseAddress = new Uri("https://pokebuildapi.fr/api/v1/");
 });
 builder.Services.AddSingleton<FavoriService>();
+builder.Services.AddSingleton<AuthService>();
 
 var app = builder.Build();
 

@@ -13,7 +13,7 @@ namespace PokeBlaz.Models
         [JsonPropertyName("image")]
         public string Image { get; set; } = string.Empty;
 
-        [JsonPropertyName("base")]
+        [JsonPropertyName("stats")]
         public PokemonStats Base { get; set; } = new();
 
         [JsonPropertyName("apiTypes")]
@@ -25,14 +25,21 @@ namespace PokeBlaz.Models
         [JsonPropertyName("HP")]
         public int HP { get; set; }
 
-        [JsonPropertyName("Attack")]
-        public int Attack { get; set; }
+        [JsonPropertyName("attack")]
+        public int attack { get; set; }
 
-        [JsonPropertyName("Defense")]
-        public int Defense { get; set; }
+        [JsonPropertyName("defense")]
+        public int defense { get; set; }
 
-        [JsonPropertyName("Speed")]
-        public int Speed { get; set; }
+        [JsonPropertyName("special_attack")]
+        public int special_attack { get; set; }
+
+        [JsonPropertyName("special_defense")]
+        public int special_defense { get; set; }
+
+
+        [JsonPropertyName("speed")]
+        public int speed { get; set; }
     }
 
     public class PokemonType

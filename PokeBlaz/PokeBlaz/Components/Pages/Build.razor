@@ -1,0 +1,198 @@
+﻿@page "/build"
+@using PokeBlaz.Models
+@using PokeBlaz.Services
+@inject PokemonService PokemonService
+@inject FavoriService FavoriService
+@inject AuthService AuthService
+@rendermode InteractiveServer
+
+@if (!AuthService.EstConnecte)
+{
+    <div style="text-align:center; padding: 3rem;">
+        <h1> Accès refusé</h1>
+        <p>Tu dois être <a href="/login">connecté</a> pour créer un build.</p>
+    </div>
+}
+else
+{
+    <div class="build-page">
+        <h1> Créer mon Build</h1>
+        <p style="color: var(--text-muted); margin-bottom: 2rem;">
+            Choisis jusqu'à 6 pokémons pour composer ton équipe.
+        </p>
+
+        @* Équipe actuelle *@
+        <div class="team-section">
+            <h2>Mon Équipe (@equipe.Count/6)</h2>
+            <button class="btn-aleatoire" @onclick="BuildAleatoire" disabled="@(tousPokemon == null)">
+                 Équipe aléatoire
+            </button>
+            <div class="team-slots">
+                @for (int i = 0; i < 6; i++)
+                {
+                    var index = i;
+                    @if (index < equipe.Count)
+                    {
+                        var pokemon = equipe[index];
+                        <div class="team-slot filled">
+                            <img src="@pokemon.Image" alt="@pokemon.Name" />
+                            <span>@pokemon.Name</span>
+                            <button @onclick="() => RetirerDuBuild(index)">✕</button>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="team-slot empty">
+                            <span>?</span>
+                        </div>
+                    }
+                }
+            </div>
+
+            @if (equipe.Count > 0)
+            {
+                @* Stats moyennes *@
+                <div class="team-stats">
+                    <h2>Stats moyennes de l'équipe</h2>
+                    <div class="stat-row">
+                        <span> HP</span>
+                        <div class="stat-bar">
+                            <div class="bar-fill hp" style="width:@(MoyenneStat(p => p.Base.HP) / 2)%"></div>
+                        </div>
+                        <span>@MoyenneStat(p => p.Base.HP)</span>
+                    </div>
+                    <div class="stat-row">
+                        <span> Attaque</span>
+                        <div class="stat-bar">
+                            <div class="bar-fill attack" style="width:@(MoyenneStat(p => p.Base.attack) / 2)%"></div>
+                        </div>
+                        <span>@MoyenneStat(p => p.Base.attack)</span>
+                    </div>
+                    <div class="stat-row">
+                        <span> Défense</span>
+                        <div class="stat-bar">
+                            <div class="bar-fill defense" style="width:@(MoyenneStat(p => p.Base.defense) / 2)%"></div>
+                        </div>
+                        <span>@MoyenneStat(p => p.Base.defense)</span>
+                    </div>
+                    <div class="stat-row">
+                        <span> Atk Spe</span>
+                        <div class="stat-bar">
+                            <div class="bar-fill attack" style="width:@(MoyenneStat(p => p.Base.special_attack) / 2)%"></div>
+                        </div>
+                        <span>@MoyenneStat(p => p.Base.special_attack)</span>
+                    </div>
+                    <div class="stat-row">
+                        <span> Def Spe</span>
+                        <div class="stat-bar">
+                            <div class="bar-fill defense" style="width:@(MoyenneStat(p => p.Base.special_defense) / 2)%"></div>
+                        </div>
+                        <span>@MoyenneStat(p => p.Base.special_defense)</span>
+                    </div>
+                    <div class="stat-row">
+                        <span> Vitesse</span>
+                        <div class="stat-bar">
+                            <div class="bar-fill speed" style="width:@(MoyenneStat(p => p.Base.speed) / 2)%"></div>
+                        </div>
+                        <span>@MoyenneStat(p => p.Base.speed)</span>
+                    </div>
+                </div>
+
+                <button class="btn-sauvegarder" @onclick="SauvegarderBuild">
+                     Sauvegarder dans les favoris
+                </button>
+
+                @if (messageSauvegarde)
+                {
+                    <p style="color: var(--accent-green); margin-top: 1rem;">
+                        Build sauvegardé dans tes favoris !
+                    </p>
+                }
+            }
+        </div>
+
+        @* Sélecteur de pokémons *@
+        <div class="selector-section">
+            <h2>Ajouter un Pokémon</h2>
+            <div class="search-bar" style="padding: 1rem 0;">
+                <input type="text" placeholder="Rechercher..."
+                       @bind="recherche" @bind:event="oninput" />
+            </div>
+
+            @if (tousPokemon == null)
+            {
+                <p>Chargement...</p>
+            }
+            else
+            {
+                <div class="pokemon-grid">
+                    @foreach (var pokemon in PokemonsFiltres)
+                    {
+                        var estDansEquipe = equipe.Any(p => p.Id == pokemon.Id);
+                        <div class="pokemon-card @(estDansEquipe ? "in-team" : "")">
+                            <img src="@pokemon.Image" alt="@pokemon.Name" />
+                            <h3>@pokemon.Name</h3>
+                            <button @onclick="() => AjouterAuBuild(pokemon)"
+                                    disabled="@(estDansEquipe || equipe.Count >= 6)">
+                                @(estDansEquipe ? " Dans l'équipe" : " Ajouter")
+                            </button>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+}
+
+@code {
+    private List<Pokemon>? tousPokemon;
+    private List<Pokemon> equipe = new();
+    private string recherche = "";
+    private bool messageSauvegarde = false;
+
+    private IEnumerable<Pokemon> PokemonsFiltres =>
+        tousPokemon?.Where(p => p.Name.Contains(recherche, StringComparison.OrdinalIgnoreCase))
+        ?? Enumerable.Empty<Pokemon>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        tousPokemon = await PokemonService.GetAllPokemonsAsync();
+    }
+
+    private void AjouterAuBuild(Pokemon pokemon)
+    {
+        if (equipe.Count < 6 && !equipe.Any(p => p.Id == pokemon.Id))
+            equipe.Add(pokemon);
+    }
+
+    private void RetirerDuBuild(int index)
+    {
+        equipe.RemoveAt(index);
+        messageSauvegarde = false;
+    }
+
+    private int MoyenneStat(Func<Pokemon, int> selector)
+    {
+        if (!equipe.Any()) return 0;
+        return (int)equipe.Average(selector);
+    }
+
+    private void SauvegarderBuild()
+    {
+        foreach (var pokemon in equipe)
+            FavoriService.Ajouter(pokemon);
+        messageSauvegarde = true;
+    }
+    private void BuildAleatoire()
+    {
+        if (tousPokemon == null) return;
+
+        var rng = new Random();
+        equipe = tousPokemon
+            .OrderBy(_ => rng.Next())
+            .Take(6)
+            .ToList();
+
+        messageSauvegarde = false;
+    }
+}

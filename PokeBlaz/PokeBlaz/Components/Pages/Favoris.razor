@@ -1,5 +1,90 @@
-﻿<h3>Favoris</h3>
+﻿@page "/favoris"
+@using PokeBlaz.Models
+@using PokeBlaz.Services
+@inject FavoriService FavoriService
+@inject AuthService AuthService
+@rendermode InteractiveServer
+
+@if (!AuthService.EstConnecte)
+{
+    <p>Tu dois être <a href="/login">connecté</a> pour voir tes favoris.</p>
+}
+else
+{
+    @* ... tout le contenu existant de la page ... *@
+}
+
+<h1> Mes Favoris</h1>
+
+@if (!favoris.Any())
+{
+    <p>Tu n'as pas encore de favoris. <a href="/pokemon">Explore les pokémons !</a></p>
+}
+else
+{
+    <div class="pokemon-grid">
+        @foreach (var favori in favoris)
+        {
+            <div class="pokemon-card">
+                <img src="@favori.PokemonImage" alt="@favori.PokemonName" />
+                <h3>@favori.PokemonName</h3>
+
+                <div class="note-section">
+                    @if (enEdition == favori.PokemonId)
+                    {
+                        <textarea @bind="noteEnCours" placeholder="Ta note personnelle..."></textarea>
+                        <button @onclick="() => SauvegarderNote(favori)"> Sauvegarder</button>
+                        <button @onclick="AnnulerEdition">Annuler</button>
+                    }
+                    else
+                    {
+                        <p class="note">@(string.IsNullOrEmpty(favori.Note) ? "Aucune note" : favori.Note)</p>
+                        <button @onclick="() => EditerNote(favori)"> Modifier note</button>
+                    }
+                </div>
+
+                <div class="card-actions">
+                    <a href="/pokemon/@favori.PokemonId">Voir détail</a>
+                    <button class="btn-supprimer" @onclick="() => Supprimer(favori.PokemonId)">
+                         Supprimer
+                    </button>
+                </div>
+            </div>
+        }
+    </div>
+}
 
 @code {
+    private List<Favori> favoris = new();
+    private int? enEdition = null;
+    private string noteEnCours = "";
 
+    protected override void OnInitialized()
+    {
+        favoris = FavoriService.GetAll();
+    }
+
+    private void Supprimer(int id)
+    {
+        FavoriService.Supprimer(id);
+    }
+
+    private void EditerNote(Favori favori)
+    {
+        enEdition = favori.PokemonId;
+        noteEnCours = favori.Note;
+    }
+
+    private void SauvegarderNote(Favori favori)
+    {
+        favori.Note = noteEnCours;
+        enEdition = null;
+        noteEnCours = "";
+    }
+
+    private void AnnulerEdition()
+    {
+        enEdition = null;
+        noteEnCours = "";
+    }
 }
