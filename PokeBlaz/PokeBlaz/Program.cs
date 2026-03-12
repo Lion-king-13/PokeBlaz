@@ -8,7 +8,8 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 builder.Services.AddHttpClient<PokemonService>(client =>
 {
-    client.BaseAddress = new Uri("https://pokebuildapi.fr/api/v1/");
+    client.BaseAddress = new Uri("https://pokeapi.co/api/v2/");
+    client.Timeout = TimeSpan.FromSeconds(60);
 });
 builder.Services.AddSingleton<FavoriService>();
 builder.Services.AddSingleton<AuthService>();
