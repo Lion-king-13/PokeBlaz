@@ -28,34 +28,41 @@ namespace PokeBlaz.Services
         /// 2. Fetcher chaque Pokémon en parallèle via Task.WhenAll
         /// Le résultat est mis en cache pour éviter les appels répétés.
         /// </summary>
-        public async Task<List<Pokemon>> GetAllPokemonsAsync()
+        /// <summary>
+        /// Charge les Pokémons un par un et rapporte la progression via le callback.
+        /// progress(actuel, total) est appelé après chaque Pokémon chargé.
+        /// </summary>
+        public async Task<List<Pokemon>> GetAllPokemonsAsync(
+            Action<int, int>? progress = null)
         {
-            // Retourner le cache si déjà chargé
             if (_cache != null) return _cache;
 
             try
             {
-                // Étape 1 — récupérer la liste des 151 premiers
                 var liste = await _http.GetFromJsonAsync<PokemonListResponse>(
                     $"{BaseUrl}/pokemon?limit=151"
                 );
 
                 if (liste == null) return GetMockPokemons();
 
-                // Étape 2 — fetcher chaque Pokémon en parallèle
-                var taches = liste.Results.Select(item =>
-                    _http.GetFromJsonAsync<Pokemon>(item.Url)
-                );
+                var resultats = new List<Pokemon>();
+                int total = liste.Results.Count;
 
-                var resultats = await Task.WhenAll(taches);
+                // Chargement un par un pour pouvoir reporter la progression
+                for (int i = 0; i < total; i++)
+                {
+                    var pokemon = await _http.GetFromJsonAsync<Pokemon>(liste.Results[i].Url);
+                    if (pokemon != null)
+                    {
+                        pokemon.Name = Capitalize(pokemon.Name);
+                        resultats.Add(pokemon);
+                    }
 
-                // Capitaliser les noms (PokeAPI retourne tout en minuscules)
-                _cache = resultats
-                    .Where(p => p != null)
-                    .Select(p => { p!.Name = Capitalize(p.Name); return p; })
-                    .OrderBy(p => p.Id)
-                    .ToList()!;
+                    // Notifie la page de la progression actuelle
+                    progress?.Invoke(i + 1, total);
+                }
 
+                _cache = resultats.OrderBy(p => p.Id).ToList();
                 return _cache;
             }
             catch (Exception)

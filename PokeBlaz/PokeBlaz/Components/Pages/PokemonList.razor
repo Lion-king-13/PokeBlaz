@@ -12,7 +12,14 @@
 
 @if (pokemons == null)
 {
-    <p>Chargement...</p>
+    <div class="loading-container">
+        <p>Chargement des Pokémons... @pokemonsCharges / @pokemonsTotal</p>
+        <div class="progress-bar-container">
+            <div class="progress-bar-fill"
+                 style="width: @(pokemonsTotal > 0 ? (pokemonsCharges * 100 / pokemonsTotal) : 0)%">
+            </div>
+        </div>
+    </div>
 }
 else
 {
@@ -54,6 +61,8 @@ else
     private List<Pokemon>? pokemons;
     // Terme de recherche pour filtrer l'affichage
     private string recherche = "";
+    private int pokemonsCharges = 0;
+    private int pokemonsTotal = 151;
 
     // Collection filtrée selon le terme de recherche (sûre même si pokemons == null)
     private IEnumerable<Pokemon> PokemonsFiltres =>
@@ -63,7 +72,13 @@ else
     // Chargement initial des pokémons via PokemonService
     protected override async Task OnInitializedAsync()
     {
-        pokemons = await PokemonService.GetAllPokemonsAsync();
+        pokemons = await PokemonService.GetAllPokemonsAsync((actuel, total) =>
+        {
+            pokemonsCharges = actuel;
+            pokemonsTotal = total;
+            // Force Blazor à re-rendre pour mettre à jour la barre
+            InvokeAsync(StateHasChanged);
+        });
     }
 
     // Ajoute un pokémon aux favoris via le service dédié

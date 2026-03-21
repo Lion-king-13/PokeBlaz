@@ -16,7 +16,7 @@
         private readonly Dictionary<string, string> _utilisateurs = new()
         {
             { "ash", "pikachu" },
-            { "misty", "togepi" }
+            { "misty", "togepi" },
         };
 
         // Tente de connecter un utilisateur en vérifiant le dictionnaire.

@@ -4,6 +4,7 @@
 @inject PokemonService PokemonService
 @inject FavoriService FavoriService
 @inject AuthService AuthService
+@attribute [StreamRendering]
 @rendermode InteractiveServer
 
 @* Page permettant de composer une équipe (build) de jusqu'à 6 pokémons.
@@ -127,7 +128,14 @@ else
 
             @if (tousPokemon == null)
             {
-                <p>Chargement...</p>
+                <div class="loading-container">
+                    <p>Chargement des Pokémons... @pokemonsCharges / @pokemonsTotal</p>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill"
+                             style="width: @(pokemonsTotal > 0 ? (pokemonsCharges * 100 / pokemonsTotal) : 0)%">
+                        </div>
+                    </div>
+                </div>
             }
             else
             {
@@ -159,6 +167,8 @@ else
     private string recherche = "";
     // Indicateur visuel après sauvegarde
     private bool messageSauvegarde = false;
+    private int pokemonsCharges = 0;
+    private int pokemonsTotal = 151;
 
     private IEnumerable<Pokemon> PokemonsFiltres =>
         tousPokemon?.Where(p => p.Name.Contains(recherche, StringComparison.OrdinalIgnoreCase))
@@ -166,7 +176,12 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        tousPokemon = await PokemonService.GetAllPokemonsAsync();
+        tousPokemon = await PokemonService.GetAllPokemonsAsync((actuel, total) =>
+        {
+            pokemonsCharges = actuel;
+            pokemonsTotal = total;
+            InvokeAsync(StateHasChanged);
+        });
     }
 
     private void AjouterAuBuild(Pokemon pokemon)

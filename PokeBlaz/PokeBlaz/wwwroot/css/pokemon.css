@@ -559,3 +559,30 @@ a {
         opacity: 0.4;
         cursor: not-allowed;
     }
+/* ===== BARRE DE PROGRESSION ===== */
+.loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    padding: 4rem 2rem;
+    color: var(--text-muted);
+    font-family: 'Press Start 2P', monospace;
+    font-size: 0.6rem;
+}
+
+.progress-bar-container {
+    width: 400px;
+    max-width: 90vw;
+    height: 16px;
+    background: var(--border);
+    border-radius: 99px;
+    overflow: hidden;
+}
+
+.progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent-blue), var(--accent-green));
+    border-radius: 99px;
+    transition: width 0.2s ease;
+}
